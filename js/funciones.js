@@ -5,7 +5,7 @@ $(function() {
     (function(app) {
 
         app.init = function() {
-            alert('Cargando aplicacion');
+            //alert('Cargando aplicacion');
             app.buscarPersonas();
             app.bindings();
         };
@@ -48,7 +48,7 @@ $(function() {
                 dataType: 'json',
                 data: $("#formPersona").serialize(),
                 success: function(data) {
-                    console.log(data);
+                 //   console.log(data);
                     app.buscarPersonas();
                     $("#modalPersona").modal('hide');
                 },

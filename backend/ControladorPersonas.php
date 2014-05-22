@@ -1,30 +1,21 @@
 <?php
-require './ConexionDb.php';
+require './ControladorGeneral.php';
+require './SentenciasDb.php';
 /**
  * Description of ControladorPersonas
  *
  * @author ieltxu
  */
-class ControladorPersonas {
+class ControladorPersonas extends ControladorGeneral implements SentenciasDb{
     
-    private $_conexion = null;
-    
-    public function __construct() {
-        $db = new ConexionDb();
-        $this->_conexion = $db->getConexion();
-    }
-
     public function listar() {
-
-        $query = "SELECT * FROM persona";
-
-        $statement = $this->_conexion->prepare($query);
-
-        $statement->execute();
+        
+        $statement = $this->ejecutarSentencia(null, SentenciasDb::BUSCAR_PERSONAS);
 
         $arrayPersonas = $statement->fetchAll(PDO::FETCH_ASSOC);
 
         return $arrayPersonas;
+      
     }
     
     public function guardar(){
@@ -33,40 +24,28 @@ class ControladorPersonas {
         $apellido = $_POST['apellido'];
         $dni = $_POST['dni'];
         $id = $_POST['id'];
-        if($nombre = " ") {
+        if($nombre == "") {
             return "Hay que completar el nombre";
         }
+        $parametros = array($nombre,$apellido,$dni);
         if($id == 0) {
-        $query = "INSERT INTO persona (nombre, apellido, dni) VALUES (?,?,?)";
+            
+        return $statement = $this->ejecutarSentencia($parametros, SentenciasDb::AGREGAR_PERSONA);
         
-        $statement = $this->_conexion->prepare($query);
-        $statement->bindParam(1, $nombre);
-        $statement->bindParam(2, $apellido);
-        $statement->bindParam(3, $dni);
         } else {
-            $query = "UPDATE persona SET nombre = ?, apellido = ?, dni = ? WHERE id = ?";
-                    
-        $statement = $this->_conexion->prepare($query);
-        $statement->bindParam(1, $nombre);
-        $statement->bindParam(2, $apellido);
-        $statement->bindParam(3, $dni);
-        $statement->bindParam(4, $id);
+        $parametros[3] = $id;
+        return $statement = $this->ejecutarSentencia($parametros, SentenciasDb::MODIFICAR_PERSONA);
 
         }
         
-        return $statement->execute();
     }
     
     public function eliminar() {
         $id = $_GET['id'];
         
-        $query = "DELETE from persona WHERE id = ?";
-        $statement = $this->_conexion->prepare($query);
+        $parametros = array($id);
         
-        $statement->bindParam(1, $id);
-        
-        $result = $statement->execute();
-        return $result;
+        return $statement = $this->ejecutarSentencia($parametros, SentenciasDb::BORRAR_PERSONA);
     }
 
 }
